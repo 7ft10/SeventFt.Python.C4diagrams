@@ -8,7 +8,7 @@ from IPython.display import display, Markdown
 from . import C4Node, Container, Persona, Database, System, Component, Code, System
 
 class Factory():
-	_baseUrl = "https://raw.githubusercontent.com/7ft10/C4ArchitectureExamples/main/"
+	_baseUrl = "https://raw.githubusercontent.com/7ft10/SeventFt10.Python.C4diagrams/main/"
 
 	def __init__(self, nodeType: str):
 		self.nodeType = nodeType
