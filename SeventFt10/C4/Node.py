@@ -1,50 +1,10 @@
 """
 A set of nodes and edges to visualize software architecture using the C4 model.
 """
-import html
-import textwrap
 from diagrams import Node, Cluster, Edge
+from SeventFt10.C4 import FormatterMixIn
 
-class C4FormatterMixIn:
-    def _format_node_label(self, name, key, description):
-        """Create a graphviz label string for a C4 node"""
-        title = f'<font point-size="12"><b>{html.escape(name)}</b></font><br/>'
-        subtitle = f'<font point-size="9">[{html.escape(key)}]<br/></font>' if key else ""
-        text = f'<br/><font point-size="10">{self._format_description(description)}</font>' if description else ""
-        return f"<{title}{subtitle}{text}>"
-
-    def _format_description(self, description):
-        """
-        Formats the description string so it fits into the C4 nodes.
-
-        It line-breaks the description so it fits onto exactly three lines. If there are more
-        than three lines, all further lines are discarded and "..." inserted on the last line to
-        indicate that it was shortened. This will also html-escape the description so it can
-        safely be included in a HTML label.
-        """
-        wrapper = textwrap.TextWrapper(width = 40, max_lines = 3)
-        lines = [html.escape(line) for line in wrapper.wrap(description)]
-        lines += [""] * (3 - len(lines))  # fill up with empty lines so it is always three
-        return "<br/>".join(lines)
-
-    def _format_edge_label(self, description):
-        """Create a graphviz label string for a C4 edge"""
-        wrapper = textwrap.TextWrapper(width = 24, max_lines = 3)
-        lines = [html.escape(line) for line in wrapper.wrap(description)]
-        text = "<br/>".join(lines)
-        return f'<<font point-size="10">{text}</font>>'
-
-    def _to_bool(self, value):
-        if isinstance(value, bool): return value
-        if not isinstance(value, str): raise ValueError('invalid literal for boolean. Not a string.')
-        valid = { 'true': True, 't': True, '1': True, 'false': False, 'f': False, '0': False }
-        lower_value = value.lower()
-        if lower_value in valid:
-            return valid[lower_value]
-        else:
-            raise ValueError('invalid literal for boolean: "%s"' % value)
-
-class C4Node(C4FormatterMixIn, Node):
+class C4Node(FormatterMixIn.Formatter, Node):
     def __init__(self, name, summary = "", description = "", type = "Container", **kwargs):
         self._icon = kwargs.get('icon_path', None)
         key = f"{type}: {summary}" if summary else type
@@ -71,6 +31,27 @@ class C4Node(C4FormatterMixIn, Node):
             return super()._load_icon()
         else:
             return self._icon
+
+class SystemBoundary(FormatterMixIn.Formatter, Cluster):
+    def __init__(self, label, **kwargs):
+        attributes:dict[str, any] = {
+            "label": self._format_escape(label),
+            "bgcolor": "white",
+            "margin": "16",
+            "style": "dashed",
+        }
+        attributes.update(kwargs)
+        super().__init__(label = attributes.pop('label'), graph_attr = attributes)
+
+class Relationship(FormatterMixIn.Formatter, Edge):
+    def __init__(self, label = "", **kwargs):
+        attributes:dict[str, any] = {
+            "style": "dashed",
+            "color": "gray60",
+            "label": self._format_edge_label(label) if label else "",
+        }
+        attributes.update(kwargs)
+        super().__init__(label = attributes.pop('label'), **attributes)
 
 class Container(C4Node):
     def __init__(self, name, summary = "", description = "", **kwargs:dict[str, any]):
@@ -135,24 +116,3 @@ class Code(C4Node):
         }
         attributes.update(kwargs)
         super().__init__(name, summary, description, type, **attributes)
-
-class SystemBoundary(C4FormatterMixIn, Cluster):
-    def __init__(self, label, **kwargs):
-        attributes:dict[str, any] = {
-            "label": html.escape(label),
-            "bgcolor": "white",
-            "margin": "16",
-            "style": "dashed",
-        }
-        attributes.update(kwargs)
-        super().__init__(label = attributes.pop('label'), graph_attr = attributes)
-
-class Relationship(C4FormatterMixIn, Edge):
-    def __init__(self, label = "", **kwargs):
-        attributes:dict[str, any] = {
-            "style": "dashed",
-            "color": "gray60",
-            "label": self._format_edge_label(label) if label else "",
-        }
-        attributes.update(kwargs)
-        super().__init__(label = attributes.pop('label'), **attributes)

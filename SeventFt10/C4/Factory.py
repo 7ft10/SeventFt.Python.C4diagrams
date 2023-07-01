@@ -1,30 +1,24 @@
-#@title Repository
+"""
+Factory
+"""
 import os
 import yaml
 from urllib import request, parse
 from IPython.display import display, Markdown
+from SeventFt10 import Container, Persona, Database, System, Component, Code, System
 
-from SeventFtC4 import Container, Persona, Database, System, Component, Code, System
-
-#@markdown # Seven Ft Repository
-class SevenftRepository():
-  def Print(self):
-    for member in dir(self):
-      typ = getattr(self, member)
-      if isinstance(typ, SevenftNode):
-        typ.Print()
-
-#@markdown # Seven Ft Node
-class SevenftNode():
+class Factory():
   _baseUrl = "https://raw.githubusercontent.com/7ft10/C4ArchitectureExamples/main/"
 
   def __init__(self, nodeType: str):
     self.nodeType = nodeType
-    self.default_icon = SevenftNode.GetIcon('_default_icon.png', self._baseUrl + 'Library/Icons/Missing.png')
-    self.default_persona_icon = SevenftNode.GetIcon('_persona.png', self._baseUrl + 'Library/Icons/Persona.png')
+    self.default_icon = Factory.GetIcon('_default_icon.png', self._baseUrl + 'Library/Icons/Missing.png')
+    self.default_persona_icon = Factory.GetIcon('_persona.png', self._baseUrl + 'Library/Icons/Persona.png')
 
   @staticmethod
   def metadata(args = {}):
+    """
+  	"""
     def _metadata(func):
       func.metadata = args or {}
       func.metadata.setdefault('name', 'Name missing')
@@ -34,6 +28,8 @@ class SevenftNode():
 
   @staticmethod
   def GetIcon(name: str, url: str):
+    """
+  	"""
     try:
       request.urlretrieve(url, name)
       return name
@@ -42,18 +38,22 @@ class SevenftNode():
 
   @staticmethod
   def LoadFromYaml(url: str):
+    """
+  	"""
     path = "_" + os.path.basename(parse.urlparse(url).path) ## Temp file
     request.urlretrieve(url, path)
     with open(path, "r") as stream: archetype = yaml.safe_load(stream)
     id = str(archetype.get('id'))
     nodeType = str(archetype.get("nodeType"))
-    globals()[id] = type(id, (SevenftNode, ), {
-      "__init__": lambda self : SevenftNode.__init__(self, nodeType),
+    globals()[id] = type(id, (Factory, ), {
+      "__init__": lambda self : Factory.__init__(self, nodeType),
       "metadata": archetype
     })
     return globals()[id]()
 
   def Print(self):
+    """
+  	"""
     if (self.metadata != None) and (isinstance(self.metadata, type({}))):
       display(Markdown('---'))
       display(Markdown('## ' + self.__class__.__name__))
@@ -65,11 +65,13 @@ class SevenftNode():
         display(Markdown(table))
 
   def Get(self):
+    """
+  	"""
     md: dict = self.metadata.copy()
     md.setdefault('summary', '')
 
     if md.get("icon") != None:
-      md["icon_path"] = SevenftNode.GetIcon("_" + md.get('id') + ".png", md.get("icon"))
+      md["icon_path"] = Factory.GetIcon("_" + md.get('id') + ".png", md.get("icon"))
 
     match self.nodeType:
       case "Container":
