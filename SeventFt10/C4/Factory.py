@@ -5,7 +5,7 @@ import os
 import yaml
 from urllib import request, parse
 from IPython.display import display, Markdown
-from SeventFt10.C4.Diagrams import C4Node, Container, Persona, Database, System, Component, Code, System
+from . import C4Node, Container, Persona, Database, System, Component, Code, System
 
 class Factory():
 	_baseUrl = "https://raw.githubusercontent.com/7ft10/C4ArchitectureExamples/main/"

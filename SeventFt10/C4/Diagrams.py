@@ -2,7 +2,7 @@
 A set of nodes and edges to visualize software architecture using the C4 model.
 """
 from diagrams import Node, Cluster, Edge
-from SeventFt10.C4 import FormatterMixIn
+from . import FormatterMixIn
 
 class C4Node(FormatterMixIn.Formatter, Node):
     def __init__(self, name, summary = "", description = "", type = "Container", **kwargs):
