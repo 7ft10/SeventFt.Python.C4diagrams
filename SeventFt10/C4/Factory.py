@@ -5,7 +5,7 @@ import os
 import yaml
 from urllib import request, parse
 from IPython.display import display, Markdown
-from SeventFt10 import Container, Persona, Database, System, Component, Code, System
+from SeventFt10.C4.Diagrams import C4Node, Container, Persona, Database, System, Component, Code, System
 
 class Factory():
 	_baseUrl = "https://raw.githubusercontent.com/7ft10/C4ArchitectureExamples/main/"
@@ -64,7 +64,7 @@ class Factory():
 				table = table + "\n| " + k + " | " + (v if isinstance(v, str) else str(v)) + " |"
 			display(Markdown(table))
 
-	def Get(self):
+	def Get(self) -> C4Node:
 		"""
 		"""
 		md: dict = self.metadata.copy()

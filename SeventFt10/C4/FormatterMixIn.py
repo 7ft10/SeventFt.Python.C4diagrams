@@ -5,7 +5,7 @@ import html
 import textwrap
 
 class Formatter:
-    def _format_node_label(self, name, key, description):
+    def _format_node_label(self, name:str, key:str, description:str) -> str:
         """
         Create a graphviz label string for a C4 node
         """
@@ -14,7 +14,7 @@ class Formatter:
         text = f'<br/><font point-size="10">{self._format_description(description)}</font>' if description else ""
         return f"<{title}{subtitle}{text}>"
 
-    def _format_description(self, description):
+    def _format_description(self, description:str) -> str:
         """
         Formats the description string so it fits into the C4 nodes.
 
@@ -28,7 +28,7 @@ class Formatter:
         lines += [""] * (3 - len(lines))  # fill up with empty lines so it is always three
         return "<br/>".join(lines)
 
-    def _format_edge_label(self, description):
+    def _format_edge_label(self, description:str) -> str:
         """
         Create a graphviz label string for a C4 edge
         """
@@ -37,13 +37,13 @@ class Formatter:
         text = "<br/>".join(lines)
         return f'<<font point-size="10">{text}</font>>'
 
-    def _format_escape(self, text):
+    def _format_escape(self, text) -> str:
         """
         html escape the text
         """
         return html.escape(text)
 
-    def _to_bool(self, value):
+    def _to_bool(self, value:any) -> bool:
         """
         Ensure a bool is returned
         """
