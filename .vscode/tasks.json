@@ -13,6 +13,12 @@
 			"type": "shell",
 			"command": "pip uninstall SevenFt10.C4.Diagrams",
 			"problemMatcher": []
+		},
+		{
+			"label": "Test",
+			"type": "shell",
+			"command": "pytest ./tests/",
+			"problemMatcher": []
 		}
 	]
 }
