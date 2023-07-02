@@ -7,5 +7,8 @@ setup (
     author = 'Mike Burns',
     author_email = 'mike@7ft10.com',
     packages = find_packages(),
-    long_description = open('README.md').read()
+    long_description = open('README.md').read(),
+    install_requires = [
+        'diagrams',
+    ],
 )
