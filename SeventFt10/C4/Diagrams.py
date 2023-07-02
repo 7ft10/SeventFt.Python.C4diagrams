@@ -2,9 +2,9 @@
 A set of nodes and edges to visualize software architecture using the C4 model.
 """
 from diagrams import Node, Cluster, Edge
-from . import FormatterMixIn
+from .FormatterMixIn import Formatter
 
-class C4Node(FormatterMixIn.Formatter, Node):
+class C4Node(Formatter, Node):
     def __init__(self, name, summary = "", description = "", type = "Container", **kwargs):
         self._icon = kwargs.get('icon_path', None)
         key = f"{type}: {summary}" if summary else type
@@ -32,7 +32,7 @@ class C4Node(FormatterMixIn.Formatter, Node):
         else:
             return self._icon
 
-class SystemBoundary(FormatterMixIn.Formatter, Cluster):
+class SystemBoundary(Formatter, Cluster):
     def __init__(self, label, **kwargs):
         attributes:dict[str, any] = {
             "label": self._format_escape(label),
@@ -43,7 +43,7 @@ class SystemBoundary(FormatterMixIn.Formatter, Cluster):
         attributes.update(kwargs)
         super().__init__(label = attributes.pop('label'), graph_attr = attributes)
 
-class Relationship(FormatterMixIn.Formatter, Edge):
+class Relationship(Formatter, Edge):
     def __init__(self, label = "", **kwargs):
         attributes:dict[str, any] = {
             "style": "dashed",

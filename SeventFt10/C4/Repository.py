@@ -1,7 +1,7 @@
 """
 Repository
 """
-from . import Factory
+from .Factory import Factory
 
 class Repository():
     def Print(self):
