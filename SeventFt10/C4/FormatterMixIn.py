@@ -23,16 +23,16 @@ class Formatter:
         indicate that it was shortened. This will also html-escape the description so it can
         safely be included in a HTML label.
         """
-        wrapper = textwrap.TextWrapper(width = 40, max_lines = 3)
+        wrapper = textwrap.TextWrapper(width = 40, max_lines = 4)
         lines = [html.escape(line) for line in wrapper.wrap(description)]
-        lines += [""] * (3 - len(lines))  # fill up with empty lines so it is always three
+        lines += [""] * (4 - len(lines))  # fill up with empty lines so it is always three
         return "<br/>".join(lines)
 
     def _format_edge_label(self, description:str) -> str:
         """
         Create a graphviz label string for a C4 edge
         """
-        wrapper = textwrap.TextWrapper(width = 24, max_lines = 3)
+        wrapper = textwrap.TextWrapper(width = 24, max_lines = 4)
         lines = [html.escape(line) for line in wrapper.wrap(description)]
         text = "<br/>".join(lines)
         return f'<<font point-size="10">{text}</font>>'
