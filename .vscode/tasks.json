@@ -6,12 +6,18 @@
 		{
 			"label": "Install (local)",
 			"type": "shell",
-			"command": "pip install . e"
+			"command": "pip install . e",
+			"dependsOn": [
+				"Uninstall"
+			]
 		},
 		{
 			"label": "Install (from github)",
 			"type": "shell",
-			"command": "pip install git+https://github.com/7ft10/SeventFt10.Python.C4diagrams/"
+			"command": "pip install git+https://github.com/7ft10/SeventFt10.Python.C4diagrams/",
+			"dependsOn": [
+				"Uninstall"
+			]
 		},
 		{
 			"label": "Uninstall",

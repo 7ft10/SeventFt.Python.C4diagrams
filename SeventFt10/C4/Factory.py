@@ -1,10 +1,9 @@
 """
 Factory
 """
-import os
 import base64
 import yaml
-from urllib import request, parse
+import requests
 from IPython.display import display, Markdown
 from .Diagrams import C4Node, Container, Persona, Database, System, Component, Code, System
 
@@ -13,112 +12,121 @@ _base64_default_icon = b"iVBORw0KGgoAAAANSUhEUgAAAeAAAAHgCAYAAAB91L6VAAAAAXNSR0I
 _base64_persona_icon = b"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"
 
 class Factory():
-	def __init__(self, nodeType: str):
-		self.nodeType = nodeType
-		self.default_icon = Factory.SaveIconFromBase64('_default_icon.png', _base64_default_icon)
-		self.default_persona_icon = Factory.SaveIconFromBase64('_persona.png', _base64_persona_icon)
+    def __init__(self, nodeType: str):
+        self.nodeType = nodeType
+        self.default_icon = Factory.SaveIconFromBase64('_default_icon.png', _base64_default_icon)
+        self.default_persona_icon = Factory.SaveIconFromBase64('_persona.png', _base64_persona_icon)
 
-	@staticmethod
-	def metadata(args = {}):
-		"""
-		"""
-		def _metadata(func):
-			func.metadata = args or {}
-			func.metadata.setdefault('name', 'Name missing')
-			func.metadata.setdefault('description', '')
-			return func
-		return _metadata
+    @staticmethod
+    def metadata(args = {}):
+        """
+        """
+        def _metadata(func):
+            func.metadata = args or {}
+            func.metadata.setdefault('name', 'Name missing')
+            func.metadata.setdefault('description', '')
+            return func
+        return _metadata
 
-	@staticmethod
-	def _GetIcons() -> dict[str, str]:
-		return {
-			"default" : _base64_default_icon,
-	  		"persona" : _base64_persona_icon
-		}
+    @staticmethod
+    def _GetIcons() -> dict[str, str]:
+        return {
+            "default" : _base64_default_icon,
+              "persona" : _base64_persona_icon
+        }
 
-	@staticmethod
-	def SaveIconFromBase64(name: str, b64: str) -> str:
-		"""
-		"""
-		try:
-			with open(name, 'wb') as fh:
-				fh.write(base64.decodebytes(b64))
-			return name
-		except:
-			return '_default_icon.png'
+    @staticmethod
+    def SaveIconFromBase64(name: str, b64: str) -> str:
+        """
+        """
+        try:
+            with open(name, 'wb') as fh:
+                fh.write(base64.decodebytes(b64))
+            return name
+        except:
+            return '_default_icon.png'
 
-	@staticmethod
-	def GetIcon(name: str, url: str) -> str:
-		"""
-		"""
-		try:
-			request.urlretrieve(url, name)
-			return name
-		except:
-			return '_default_icon.png'
+    @staticmethod
+    def GetIcon(name: str, url: str) -> str:
+        """
+        """
+        try:
+            r = requests.get(url, stream = True)
+            with open(name, 'wb') as fd:
+                for chunk in r.iter_content(chunk_size=128):
+                    fd.write(chunk)
+            return name
+        except:
+            return '_default_icon.png'
 
-	@staticmethod
-	def LoadFromYaml(url: str):
-		"""
-		"""
-		path = "_" + os.path.basename(parse.urlparse(url).path) ## Temp file
-		request.urlretrieve(url, path)
-		with open(path, "r") as stream: archetype = yaml.safe_load(stream)
-		id = str(archetype.get('id'))
-		nodeType = str(archetype.get("nodeType"))
-		globals()[id] = type(id, (Factory, ), {
-			"__init__": lambda self : Factory.__init__(self, nodeType),
-			"metadata": archetype
-		})
-		return globals()[id]()
+    @staticmethod
+    def LoadYaml(yml: str):
+        """
+        """
+        archetype = yaml.safe_load(yml)
+        id = str(archetype.get('id'))
+        nodeType = str(archetype.get("nodeType"))
+        globals()[id] = type(id, (Factory, ), {
+            "__init__": lambda self : Factory.__init__(self, nodeType),
+            "metadata": archetype
+        })
+        return globals()[id]()
 
-	def DisplayMarkdown(self):
-		"""
-		"""
-		if (self.metadata != None) and (isinstance(self.metadata, type({}))):
-			display(Markdown('---'))
-			display(Markdown('## ' + self.__class__.__name__))
-		if len(self.metadata.items()) > 0:
-			table = """| Key         | Value       |
-					| ----------- | ----------- |"""
-			for k, v in self.metadata.items():
-				table = table + "\n| " + k + " | " + (v if isinstance(v, str) else str(v)) + " |"
-			display(Markdown(table))
+    @staticmethod
+    def LoadYamlFromUrl(url: str):
+        """
+        """
+        r = requests.get(url)
+        r.raise_for_status()
+        return Factory.LoadYaml(r.content)
 
-	def Print(self):
-		"""
-		"""
-		if (self.metadata != None) and (isinstance(self.metadata, type({}))):
-			print('---')
-			print('## ' + self.__class__.__name__)
-		if len(self.metadata.items()) > 0:
-			table = """| Key         | Value       |\n| ----------- | ----------- |"""
-			for k, v in self.metadata.items():
-				table = table + "\n| " + k + " | " + (v if isinstance(v, str) else str(v)) + " |"
-			print(table)
+    def DisplayMarkdown(self):
+        """
+        """
+        if (self.metadata != None) and (isinstance(self.metadata, type({}))):
+            display(Markdown('---'))
+            display(Markdown('## ' + self.__class__.__name__))
+        if len(self.metadata.items()) > 0:
+            table = """| Key         | Value       |
+                    | ----------- | ----------- |"""
+            for k, v in self.metadata.items():
+                table = table + "\n| " + k + " | " + (v if isinstance(v, str) else str(v)) + " |"
+            display(Markdown(table))
 
-	def Get(self) -> C4Node:
-		"""
-		"""
-		md: dict = self.metadata.copy()
-		md.setdefault('summary', '')
+    def Print(self):
+        """
+        """
+        if (self.metadata != None) and (isinstance(self.metadata, type({}))):
+            print('---')
+            print('## ' + self.__class__.__name__)
+        if len(self.metadata.items()) > 0:
+            table = """| Key         | Value       |\n| ----------- | ----------- |"""
+            for k, v in self.metadata.items():
+                table = table + "\n| " + k + " | " + (v if isinstance(v, str) else str(v)) + " |"
+            print(table)
 
-		if md.get("icon") != None:
-			md["icon_path"] = Factory.GetIcon("_" + md.get('id') + ".png", md.get("icon"))
+    def Get(self) -> C4Node:
+        """
+        """
+        md: dict = self.metadata.copy()
+        md.setdefault('summary', '')
 
-		match self.nodeType:
-			case "Container":
-				return Container( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
-			case "Persona":
-				md.setdefault('icon_path', self.default_persona_icon)
-				return Persona( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
-			case "Database":
-				return Database( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
-			case "System":
-				return System( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
-			case "Component":
-				return Component( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
-			case "Code":
-				return Code( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
-			case _:
-				return System( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
+        if md.get("icon") != None:
+            md["icon_path"] = Factory.GetIcon("_" + md.get('id') + ".png", md.get("icon"))
+
+        match self.nodeType:
+            case "Container":
+                return Container( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
+            case "Persona":
+                md.setdefault('icon_path', self.default_persona_icon)
+                return Persona( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
+            case "Database":
+                return Database( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
+            case "System":
+                return System( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
+            case "Component":
+                return Component( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
+            case "Code":
+                return Code( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
+            case _:
+                return System( md.pop('name'), md.pop('summary'), md.pop('description'), **md )
