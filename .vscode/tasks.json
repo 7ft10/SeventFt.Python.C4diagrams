@@ -4,14 +4,19 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Install",
+			"label": "Install (local)",
+			"type": "shell",
+			"command": "pip install . e"
+		},
+		{
+			"label": "Install (from github)",
 			"type": "shell",
 			"command": "pip install git+https://github.com/7ft10/SeventFt10.Python.C4diagrams/"
 		},
 		{
 			"label": "Uninstall",
 			"type": "shell",
-			"command": "pip uninstall SevenFt10.C4.Diagrams",
+			"command": "pip uninstall -y SevenFt10.C4.Diagrams",
 			"problemMatcher": []
 		},
 		{

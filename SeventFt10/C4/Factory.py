@@ -72,7 +72,7 @@ class Factory():
 		})
 		return globals()[id]()
 
-	def Print(self):
+	def DisplayMarkdown(self):
 		"""
 		"""
 		if (self.metadata != None) and (isinstance(self.metadata, type({}))):
@@ -84,6 +84,18 @@ class Factory():
 			for k, v in self.metadata.items():
 				table = table + "\n| " + k + " | " + (v if isinstance(v, str) else str(v)) + " |"
 			display(Markdown(table))
+
+	def Print(self):
+		"""
+		"""
+		if (self.metadata != None) and (isinstance(self.metadata, type({}))):
+			print('---')
+			print('## ' + self.__class__.__name__)
+		if len(self.metadata.items()) > 0:
+			table = """| Key         | Value       |\n| ----------- | ----------- |"""
+			for k, v in self.metadata.items():
+				table = table + "\n| " + k + " | " + (v if isinstance(v, str) else str(v)) + " |"
+			print(table)
 
 	def Get(self) -> C4Node:
 		"""

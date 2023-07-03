@@ -1,10 +1,10 @@
 import sys
 sys.path.insert(1, 'C:\\Users\\mike\\Documents\\Github\\SevenFt10.Python.C4diagrams\\')
 
-from SeventFt10.C4 import Factory
+from SeventFt10.C4 import Factory, C4Node
 
 def test_LoadFromYaml():
-	BankingCustomer = Factory.LoadFromYaml('https://raw.githubusercontent.com/7ft10/C4ArchitectureExamples/main/Repository/Personas/Banking%20Customer.yaml')
+	BankingCustomer:C4Node = Factory.LoadFromYaml('https://raw.githubusercontent.com/7ft10/C4ArchitectureExamples/main/Repository/Personas/Banking%20Customer.yaml')
 	assert BankingCustomer != None
 
 def test_SaveIconFromBase64():
