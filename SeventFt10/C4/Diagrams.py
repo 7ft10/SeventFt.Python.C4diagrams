@@ -4,6 +4,11 @@ A set of nodes and edges to visualize software architecture using the C4 model.
 from diagrams import Node, Cluster, Edge
 from .FormatterMixIn import Formatter
 
+from diagrams import Diagram as _D
+
+class Diagram(_D):
+    pass
+
 class C4Node(Formatter, Node):
     def __init__(self, name, summary = "", description = "", type = "Container", **kwargs):
         self._icon = kwargs.get('icon_path', None)
